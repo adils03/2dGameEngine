@@ -1,8 +1,14 @@
 #include "GameObject.h"
 
-GameObject::GameObject(Shader& shader,Transform& transform) : shader(shader) , transform(transform)
+GameObject::GameObject(Shader& shader, Transform& transform)
+    : shader(shader), transform(transform)
 {
     addComponent(&transform);
+}
+
+GameObject::~GameObject()
+{
+  
 }
 
 void GameObject::update()
@@ -29,5 +35,5 @@ void GameObject::addComponent(Component* component)
 void GameObject::RemoveComponent(Component* component)
 {
     components.erase(std::remove(components.begin(), components.end(), component), components.end());
-    delete component;
 }
+

@@ -10,6 +10,7 @@ public:
     ~VertexArray();
 
     void bind() const;
+    void linkAttribute(GLuint location, GLint size, GLenum type, GLboolean normalize, GLsizei stride, const void* offset) const;
     static void unbind();
 
 private:

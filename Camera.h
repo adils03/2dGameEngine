@@ -6,14 +6,14 @@
 #include "Component.h"
 #include "Shader.h"
 
-class Camera : public Component{
+class Camera : public Component {
 public:
-    Camera(Shader& shader,float width, float height);
+    Camera(Shader& shader, float width, float height);
 
     void update() const override;
     void cleanup() const override;
 
-    void updateMatrix();
+    void updateMatrix() const;
     glm::mat4 getViewProjection() const;
 
     void setPosition(const glm::vec2& pos);
@@ -23,9 +23,9 @@ private:
     Shader& shader;
     glm::vec2 position;
     float width, height;
-    glm::mat4 view;
-    glm::mat4 projection;
-    glm::mat4 viewProjection;
+    mutable glm::mat4 view;
+    mutable glm::mat4 projection;
+    mutable glm::mat4 viewProjection;
 };
 
 #endif // CAMERA_H

@@ -13,6 +13,12 @@ void VertexArray::bind() const {
     glBindVertexArray(ID);
 }
 
+void VertexArray::linkAttribute(GLuint location, GLint size, GLenum type, GLboolean normalize, GLsizei stride, const void* offset) const
+{
+    glVertexAttribPointer(location, size, type, normalize, stride, offset);
+    glEnableVertexAttribArray(location);
+}
+
 void VertexArray::unbind() {
     glBindVertexArray(0);
 }
