@@ -7,11 +7,14 @@
 #include <sstream>
 #include <iostream>
 #include <glm/glm.hpp>
+#include "Component.h"
 
-class Shader {
+class Shader : public Component{
 public:
     unsigned int ID;
     Shader(const char* vertexPath, const char* fragmentPath);
+    void update() const override;
+    void cleanup() const override;
     void use() const;
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;

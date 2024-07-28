@@ -44,6 +44,15 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	glBindTexture(texType, 0);
 }
 
+void Texture::update() const
+{
+	Bind();
+}
+
+void Texture::cleanup() const
+{
+}
+
 void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
 {
 	// Gets the location of the uniform
@@ -54,17 +63,17 @@ void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
 	glUniform1i(texUni, unit);
 }
 
-void Texture::Bind()
+void Texture::Bind() const
 {
 	glBindTexture(type, ID);
 }
 
-void Texture::Unbind()
+void Texture::Unbind() const
 {
 	glBindTexture(type, 0);
 }
 
-void Texture::Delete()
+void Texture::Delete() const
 {
 	glDeleteTextures(1, &ID);
 }

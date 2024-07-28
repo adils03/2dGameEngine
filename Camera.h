@@ -3,10 +3,15 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "Component.h"
+#include "Shader.h"
 
-class Camera {
+class Camera : public Component{
 public:
-    Camera(float width, float height);
+    Camera(Shader& shader,float width, float height);
+
+    void update() const override;
+    void cleanup() const override;
 
     void updateMatrix();
     glm::mat4 getViewProjection() const;
@@ -15,6 +20,7 @@ public:
     const glm::vec2& getPosition() const;
 
 private:
+    Shader& shader;
     glm::vec2 position;
     float width, height;
     glm::mat4 view;

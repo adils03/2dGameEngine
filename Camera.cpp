@@ -1,8 +1,18 @@
 #include "Camera.h"
 
-Camera::Camera(float width, float height)
-    : position(0.0f, 0.0f), width(width), height(height) {
+Camera::Camera(Shader& shader,float width, float height)
+    : shader(shader), position(0.0f, 0.0f), width(width), height(height) {
     updateMatrix();
+}
+
+void Camera::update() const
+{
+    shader.setMat4("viewProjection", getViewProjection());
+}
+
+void Camera::cleanup() const
+{
+
 }
 
 

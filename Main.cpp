@@ -10,12 +10,15 @@
 #include "Camera.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <STB/stb_image.h>
+#include "GameObject.h"
+#include "Transform.h"
 
+int swidth = 1280;
+int sheight = 768;
 Shader* shader;
-Camera camera(800.0f,800.0f);
+Camera* camera;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    shader->setVec2("viewPortSize", glm::vec2(width, height));
     glViewport(0, 0, width, height);
 }
 
@@ -24,24 +27,24 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         glfwSetWindowShouldClose(window, true);
     }
     if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-        camera.setPosition(camera.getPosition() + glm::vec2(0.0f, 10.0f));
+        camera->setPosition(camera->getPosition() + glm::vec2(0.0f, 10.0f));
     }
     if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-        camera.setPosition(camera.getPosition() + glm::vec2(0.0f, -10.0f));
+        camera->setPosition(camera->getPosition() + glm::vec2(0.0f, -10.0f));
     }
     if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-        camera.setPosition(camera.getPosition() + glm::vec2(-10.0f, 0.0f));
+        camera->setPosition(camera->getPosition() + glm::vec2(-10.0f, 0.0f));
     }
     if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-        camera.setPosition(camera.getPosition() + glm::vec2(10.0f, 0.0f));
+        camera->setPosition(camera->getPosition() + glm::vec2(10.0f, 0.0f));
     }
 }
 
-void setTransform(const glm::vec3& translate, float rotation, float scale) {
+void setTransform(const glm::vec3& translate, float rotation,glm::vec2 scale) {
     glm::mat4 transform = glm::mat4(1.0f);
     transform = glm::translate(transform, translate);
     transform = glm::rotate(transform, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-    transform = glm::scale(transform, glm::vec3(scale, scale, 1.0f));
+    transform = glm::scale(transform, glm::vec3(scale, 1.0f));
 
     shader->setMat4("transform", transform);
 }
@@ -52,7 +55,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(400, 400, "OpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(swidth, sheight, "OpenGL", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -65,7 +68,7 @@ int main() {
         return -1;
     }
 
-    glViewport(0, 0, 400, 400);
+    glViewport(0, 0, swidth, sheight);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetKeyCallback(window, key_callback);
 
@@ -97,17 +100,35 @@ int main() {
     Texture texture("resources/textures/pngwing.com.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
     texture.texUnit(*shader, "tex0", 0);
 
+    
+
     // Þeffaflýk
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    shader->setVec2("viewPortSize", glm::vec2(400, 400));
-
     float lastFrame = 0.0f;
     float value = 0.0f;
 
-    // light
-    Light light(glm::vec2(200,300), glm::vec3(1, 1, 1), 150);
+    Transform transform(*shader, glm::vec2(300, 300), 0, glm::vec2(100, 100));
+    Light light(*shader,glm::vec2(200,300), glm::vec3(1, 1, 1), 150);
+
+    camera = new Camera(*shader, static_cast<float>(swidth),static_cast<float>(sheight));
+    GameObject gameobject(*shader,transform);
+
+    shader->setPriority(0);
+    transform.setPriority(1);
+    camera->setPriority(2);
+    light.setPriority(3);
+    texture.setPriority(5);
+
+
+    gameobject.addComponent(camera);
+    gameobject.addComponent(shader);
+    gameobject.addComponent(&light);
+    gameobject.addComponent(&texture);
+
+
+
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = static_cast<float>(glfwGetTime());
         float deltaTime = currentFrame - lastFrame;
@@ -118,20 +139,24 @@ int main() {
 
         value += deltaTime;
 
-        shader->use();
-        shader->setMat4("viewProjection", camera.getViewProjection());
-        light.use(*shader);
-        texture.Bind();
-        setTransform(glm::vec3(400, 300, 0.0f), 0.0f, 100.0f);  // Dünya koordinatlarý ve ölçek
+        transform.Translate(glm::vec2(50,0)*deltaTime);
+
+        gameobject.update();
         vao.bind();
         glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
-        shader->use();
-        shader->setMat4("viewProjection", camera.getViewProjection());
-        light.use(*shader);
-        texture.Bind();
-        setTransform(glm::vec3(value*55, 300, 0.0f), 0.0f, 100.0f);  // Dünya koordinatlarý ve ölçek
-        vao.bind();
-        glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
+
+
+        //
+        //shader->use();
+        //shader->setMat4("viewProjection", camera->getViewProjection());
+        //light.use(*shader);
+        //texture.Bind();
+        //setTransform(glm::vec3(value, 300, 0.0f), 0.0f, glm::vec2(100,100));  // Dünya koordinatlarý ve ölçek
+        //vao.bind();
+        //glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
+        //
+
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
