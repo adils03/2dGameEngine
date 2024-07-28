@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+# Files
+.vs/
+x64/
+OpenGLPractice/x64/
