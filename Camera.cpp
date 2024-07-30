@@ -5,7 +5,7 @@ Camera::Camera(Shader& shader, float width, float height)
     setPosition(glm::vec2(-width / 2, -height / 2));
 }
 
-void Camera::update() const {
+void Camera::update()  {
     shader.setMat4("viewProjection", getViewProjection());
 }
 

@@ -6,7 +6,7 @@ class Component
 public:
 	virtual ~Component() = default;
 
-	virtual void update() const = 0;
+	virtual void update() = 0;
 	virtual void cleanup() const = 0;
 
 	int getPriority() const { return priority; }

@@ -6,11 +6,11 @@
 #include "Component.h"
 #include "Shader.h"
 
-class Camera : public Component {
+class Camera : public virtual Component {
 public:
     Camera(Shader& shader, float width, float height);
 
-    void update() const override;
+    void update()  override;
     void cleanup() const override;
 
     void updateMatrix() const;

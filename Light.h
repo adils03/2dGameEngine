@@ -6,10 +6,10 @@
 #include "Component.h"
 #include "glm/glm.hpp"
 
-class Light : public Component {
+class Light : public virtual Component {
 public:
     Light(Shader& shader, glm::vec2 lPos, glm::vec3 lColor, float lRadius);
-    void update() const override;
+    void update()  override;
     void cleanup() const override;
     void move(glm::vec2 moveVec);
     void setColor(glm::vec3 color);

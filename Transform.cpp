@@ -5,7 +5,7 @@ Transform::Transform(Shader& shader, glm::vec2 pos, float rot, glm::vec2 scl)
     setTransform(position, rotation, scale);
 }
 
-void Transform::update() const {
+void Transform::update()  {
     setTransform(position, rotation, scale);
 }
 

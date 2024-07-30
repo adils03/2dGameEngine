@@ -7,13 +7,13 @@
 #include "Shader.h"
 #include "Component.h"
 
-class Texture : public Component
+class Texture : public virtual Component
 {
 public:
 	GLuint ID;
 	GLenum type;
 	Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
-	void update() const override;
+	void update()  override;
 	void cleanup() const override;
 	void texUnit(Shader& shader, const char* uniform, GLuint unit);
 	void Bind() const;

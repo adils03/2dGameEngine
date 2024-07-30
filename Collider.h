@@ -3,26 +3,20 @@
 
 #include "glm/glm.hpp"
 #include <vector>
-#include "Component.h"
 #include "Transform.h"
 
-class Collider : public Component
+class Collider 
 {
 public:
-    Collider(Transform& transform);
+    Collider(Transform& transform,glm::vec2& pos,float rot,glm::vec2& sclVec);
     virtual ~Collider() = default;
+    Transform& transform;
     glm::vec2 position;
     float rotation;
     glm::vec2 scale;
-    std::vector<glm::vec2>* vertices = nullptr;
-
-    void update() const override;
-    void cleanup() const override;
     virtual void Translate(const glm::vec2& moveVec) = 0;
     virtual void Rotate(float angle) = 0;
     virtual void Scale(const glm::vec2& sclVec) = 0;
-protected:
-    Transform& transform;
 };
 
 #endif // COLLIDER_H

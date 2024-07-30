@@ -3,7 +3,7 @@
 Light::Light(Shader& shader, glm::vec2 lPos, glm::vec3 lColor, float lRadius)
     : shader(shader), lightPos(lPos), lightColor(lColor), lightRadius(lRadius) {}
 
-void Light::update() const {
+void Light::update()  {
     use();
 }
 

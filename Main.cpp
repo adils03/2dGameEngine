@@ -5,7 +5,7 @@
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "ElementBuffer.h"
-#include "Texture.h"
+#include "Texture.h"                                                                                          
 #include "Light.h"
 #include "Camera.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -13,7 +13,9 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Collision.h"
+#include "Collider.h"
 #include "CircleCollider.h"
+#include "BoxCollider.h"
 
 const int FIXED_WIDTH = 1280;
 const int FIXED_HEIGHT = 768;
@@ -149,7 +151,7 @@ int main() {
 	texture.texUnit(*shader, "tex0", 0);
 	texture2.texUnit(*shader2, "tex0", 0);
 
-
+	
 
 	// Þeffaflýk
 	glEnable(GL_BLEND);
@@ -167,25 +169,28 @@ int main() {
 	camera = new Camera(*shader, static_cast<float>(FIXED_WIDTH), static_cast<float>(FIXED_HEIGHT));
 	GameObject gameobject(*shader, *transform);
 	GameObject gameobject2(*shader2, transform2);
-	
-	//CircleCollider collider(transform2, transform->position, 50, 1);
 
+	BoxCollider collider1(*transform, transform->position, 1, transform->scale,100,100);
+	BoxCollider collider2(transform2, transform2.position, 1, transform2.scale, 100,100);
 
 	camera->setPriority(2);
 	light.setPriority(3);
 	texture.setPriority(5);
-
+	collider1.setPriority(4);
 
 	light2.setPriority(3);
 	texture2.setPriority(5);
+	collider2.setPriority(4);
 
 	gameobject.addComponent(camera);
 	gameobject.addComponent(shader);
+	gameobject.addComponent(&collider1);
 	gameobject.addComponent(&light);
 	gameobject.addComponent(&texture);
 
 	gameobject2.addComponent(camera);
 	gameobject2.addComponent(shader2);
+	gameobject2.addComponent(&collider2);
 	gameobject2.addComponent(&light);
 	gameobject2.addComponent(&texture);
 
@@ -206,17 +211,10 @@ int main() {
 		glm::vec2 normal = glm::vec2();
 		float depth = 0;
 
-		if (value > 1) {
-			std::cout << "dog1: " << transform->position.x << "-" << transform->position.y << std::endl;
-			std::cout << "dog2: " << transform2.position.x << "-" << transform2.position.y << std::endl;
-			value = 0;
+		if (Collisions::IntersectPolygons(collider1.position, collider2.position,collider1.getVertices(),collider2.getVertices(),normal,depth)) {
+			collider1.Translate(-normal * depth);
+			collider2.Translate(normal * depth);
 		}
-
-		if (Collisions::IntersectCircles(transform->position, transform2.position, 50, 50, normal, depth)) {
-			transform->Translate(-normal * depth);
-			transform2.Translate(normal * depth);
-		}
-
 		gameobject.update();
 		vao.bind();
 		glDrawElements(GL_TRIANGLES, indiceCount, GL_UNSIGNED_INT, 0);
@@ -228,6 +226,8 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	//cleanup
 	shader->deleteShader();
 	texture.Delete();
 	glfwTerminate();

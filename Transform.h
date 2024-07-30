@@ -5,11 +5,11 @@
 #include "Component.h"
 #include <glm/ext/matrix_transform.hpp>
 
-class Transform : public Component {
+class Transform : public virtual Component {
 public:
     Transform(Shader& shader, glm::vec2 pos, float rot, glm::vec2 scl);
 
-    void update() const override;
+    void update()  override;
     void cleanup() const override;
 
     void Translate(const glm::vec2& tVec);

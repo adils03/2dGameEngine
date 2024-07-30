@@ -44,7 +44,7 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	glBindTexture(texType, 0);
 }
 
-void Texture::update() const
+void Texture::update() 
 {
 	Bind();
 }
