@@ -12,42 +12,67 @@
 #include <STB/stb_image.h>
 #include "GameObject.h"
 #include "Transform.h"
+#include "Collision.h"
+#include "CircleCollider.h"
 
 const int FIXED_WIDTH = 1280;
 const int FIXED_HEIGHT = 768;
+Transform* transform;
 Shader* shader;
+Shader* shader2;
 Camera* camera;
+float deltaTime;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+float speed = 100;
+
+void processInput(GLFWwindow* window, float deltaTime) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
 		glfwSetWindowShouldClose(window, true);
 	}
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-		camera->setPosition(camera->getPosition() + glm::vec2(0.0f, 10.0f));
+	///
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec2(0, speed) * deltaTime);
 	}
-	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-		camera->setPosition(camera->getPosition() + glm::vec2(0.0f, -10.0f));
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec2(0, -speed) * deltaTime);
 	}
-	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-		camera->setPosition(camera->getPosition() + glm::vec2(-10.0f, 0.0f));
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec2(-speed, 0) * deltaTime);
 	}
-	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-		camera->setPosition(camera->getPosition() + glm::vec2(10.0f, 0.0f));
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		transform->Translate(glm::vec2(speed, 0) * deltaTime);
+	}
+	/////
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		camera->move(glm::vec2(0, 1000) * deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		camera->move(glm::vec2(0, -1000) * deltaTime);
+
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		camera->move(glm::vec2(-1000, 0) * deltaTime);
+
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		camera->move(glm::vec2(1000, 0) * deltaTime);
+
 	}
 }
 
-void setTransform(const glm::vec3& translate, float rotation, glm::vec2 scale) {
-	glm::mat4 transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, translate);
-	transform = glm::rotate(transform, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-	transform = glm::scale(transform, glm::vec3(scale, 1.0f));
-
-	shader->setMat4("transform", transform);
-}
 
 int main() {
 	glfwInit();
@@ -89,9 +114,9 @@ int main() {
 	}
 	glViewport(0, 0, FIXED_WIDTH, FIXED_HEIGHT);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetKeyCallback(window, key_callback);
 
 	shader = new Shader("resources/shaders/vertex_shader.glsl", "resources/shaders/fragment_shader.glsl");
+	shader2 = new Shader("resources/shaders/vertex_shader2.glsl", "resources/shaders/fragment_shader2.glsl");
 
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f, 1, 0, 0, 1, 0.0f, 0.0f,  // Köþe 0 (Küçük sol alt)
@@ -110,19 +135,19 @@ int main() {
 	VertexBuffer vbo(sizeof(vertices));
 	vbo.setData(vertices);
 
-	vao.linkAttribute(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
-	vao.linkAttribute(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
-	vao.linkAttribute(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
 
 	ElementBuffer ebo(sizeof(indices));
 	ebo.setData(indices);
 
+	vao.LinkAttributes();
 
 	VertexBuffer::unbind();
 	VertexArray::unbind();
 
 	Texture texture("resources/textures/pngwing.com.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+	Texture texture2("resources/textures/pngwing.com.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	texture.texUnit(*shader, "tex0", 0);
+	texture2.texUnit(*shader2, "tex0", 0);
 
 
 
@@ -133,21 +158,26 @@ int main() {
 	float lastFrame = 0.0f;
 	float value = 0.0f;
 
-	Transform transform(*shader, glm::vec2(0, 0), 0, glm::vec2(100, 100));
-	Transform transform2(*shader, glm::vec2(50, 75), 0, glm::vec2(100, 100));
+	transform = new Transform(*shader, glm::vec2(0, 0), 0, glm::vec2(100, 100));
+	Transform transform2(*shader2, glm::vec2(50, 75), 0, glm::vec2(100, 100));
 
 	Light light(*shader, glm::vec2(0, 0), glm::vec3(1, 1, 1), 1000);
+	Light light2(*shader2, glm::vec2(0, 0), glm::vec3(1, 1, 1), 1000);
 
 	camera = new Camera(*shader, static_cast<float>(FIXED_WIDTH), static_cast<float>(FIXED_HEIGHT));
-	GameObject gameobject(*shader, transform);
-	GameObject gameobject2(*shader, transform2);
+	GameObject gameobject(*shader, *transform);
+	GameObject gameobject2(*shader2, transform2);
+	
+	//CircleCollider collider(transform2, transform->position, 50, 1);
 
-	shader->setPriority(0);
-	transform.setPriority(1);
+
 	camera->setPriority(2);
 	light.setPriority(3);
 	texture.setPriority(5);
 
+
+	light2.setPriority(3);
+	texture2.setPriority(5);
 
 	gameobject.addComponent(camera);
 	gameobject.addComponent(shader);
@@ -155,7 +185,7 @@ int main() {
 	gameobject.addComponent(&texture);
 
 	gameobject2.addComponent(camera);
-	gameobject2.addComponent(shader);
+	gameobject2.addComponent(shader2);
 	gameobject2.addComponent(&light);
 	gameobject2.addComponent(&texture);
 
@@ -163,15 +193,29 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = static_cast<float>(glfwGetTime());
-		float deltaTime = currentFrame - lastFrame;
+		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
+		processInput(window, deltaTime);
 
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 
 		value += deltaTime;
 
-		transform2.Translate(glm::vec2(-50, 0) * deltaTime);
+		glm::vec2 normal = glm::vec2();
+		float depth = 0;
+
+		if (value > 1) {
+			std::cout << "dog1: " << transform->position.x << "-" << transform->position.y << std::endl;
+			std::cout << "dog2: " << transform2.position.x << "-" << transform2.position.y << std::endl;
+			value = 0;
+		}
+
+		if (Collisions::IntersectCircles(transform->position, transform2.position, 50, 50, normal, depth)) {
+			transform->Translate(-normal * depth);
+			transform2.Translate(normal * depth);
+		}
 
 		gameobject.update();
 		vao.bind();

@@ -1,14 +1,16 @@
 #include "Collider.h"
 
-void Collider::update() const
-{
+Collider::Collider(Transform& transform)
+    : transform(transform) {
+    this->position = transform.position;
+    this->rotation = transform.rotation;
+    this->scale = transform.scale;
 }
 
-void Collider::cleanup() const
-{
+void Collider::update() const {
+    // Implementation here
 }
 
-Collider::Collider(Transform& transform, glm::vec2& position, const glm::vec2& sclVec) :
-	transform(transform), position(position), scale(sclVec), rotation(0)
-{
+void Collider::cleanup() const {
+    // Implementation here
 }

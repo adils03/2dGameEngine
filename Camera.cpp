@@ -23,6 +23,12 @@ glm::mat4 Camera::getViewProjection() const {
     return viewProjection;
 }
 
+void Camera::move(const glm::vec2& moveVec)
+{
+    position += moveVec;
+    updateMatrix();
+}
+
 void Camera::setPosition(const glm::vec2& pos) {
     position = pos;
     updateMatrix();

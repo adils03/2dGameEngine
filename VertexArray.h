@@ -11,6 +11,7 @@ public:
 
     void bind() const;
     void linkAttribute(GLuint location, GLint size, GLenum type, GLboolean normalize, GLsizei stride, const void* offset) const;
+    void LinkAttributes();
     static void unbind();
 
 private:

@@ -16,6 +16,7 @@ public:
     void updateMatrix() const;
     glm::mat4 getViewProjection() const;
 
+    void move(const glm::vec2& moveVec);
     void setPosition(const glm::vec2& pos);
     const glm::vec2& getPosition() const;
 

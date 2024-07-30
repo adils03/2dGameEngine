@@ -18,11 +18,11 @@ public:
 
     void setTransform(const glm::vec2& translate, float rotation, const glm::vec2& scale) const;
 
-private:
-    Shader& shader;
     glm::vec2 position;
     float rotation;
     glm::vec2 scale;
+private:
+    Shader& shader;
 };
 
 #endif // TRANSFORM_H
