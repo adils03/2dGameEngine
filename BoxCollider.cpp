@@ -1,17 +1,20 @@
 #include "BoxCollider.h"
 
 BoxCollider::BoxCollider(Transform& transform, glm::vec2& pos, float rot, glm::vec2& sclVec, float width, float height)
-	: Collider(transform, pos, rot, sclVec), width(width), height(height)
+	: Collider(transform, pos, rot, sclVec),width(width), height(height)
 {
+	positionOffset = transform.position - position;
+	rotationOffset = transform.rotation - rotation;
+	scaleOffset = transform.scale / scale;
 	updateVertices();
 }
 
 
 void BoxCollider::update()
 {
-	position = transform.position;
+	position = transform.position - positionOffset;
+	rotation = transform.rotation - rotationOffset;
 	updateVertices();
-	rotation = transform.rotation;
 }
 
 void BoxCollider::cleanup() const
@@ -20,17 +23,16 @@ void BoxCollider::cleanup() const
 
 void BoxCollider::Translate(const glm::vec2& moveVec)
 {
-	transform.Translate(moveVec);
-
+	positionOffset += moveVec;
 	for (glm::vec2& vec : vertices) {
 		vec += moveVec;
 	}
-	
+
 }
 
 void BoxCollider::Rotate(float angle)
 {
-	transform.Rotate(angle);
+	rotationOffset += angle;
 
 	float radians = glm::radians(angle);
 

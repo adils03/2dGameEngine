@@ -4,12 +4,14 @@
 CircleCollider::CircleCollider(Transform& transform, glm::vec2& pos, float rot, glm::vec2& sclVec, float radius)
     : Collider(transform, pos, rot, sclVec), radius(radius)
 {
-    
+    positionOffset = transform.position - position;
+    rotationOffset = transform.rotation - rotation;
+    scaleOffset = transform.scale / scale;
 }
 
 void CircleCollider::update() {
-    position = transform.position;
-    rotation = transform.rotation;
+    position = transform.position - positionOffset;
+    rotation = transform.rotation - rotationOffset;
 }
 
 void CircleCollider::cleanup() const {
@@ -17,11 +19,11 @@ void CircleCollider::cleanup() const {
 }
 
 void CircleCollider::Translate(const glm::vec2& moveVec) {
-    transform.Translate(moveVec);
+    positionOffset += moveVec;
 }
 
 void CircleCollider::Rotate(float angle) {
-    transform.Rotate(angle);
+    rotationOffset += angle;
 }
 
 void CircleCollider::Scale(const glm::vec2& sclVec) {

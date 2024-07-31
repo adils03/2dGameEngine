@@ -12,8 +12,11 @@ public:
     virtual ~Collider() = default;
     Transform& transform;
     glm::vec2 position;
+    glm::vec2 positionOffset;
     float rotation;
+    float rotationOffset;
     glm::vec2 scale;
+    glm::vec2 scaleOffset;
     virtual void Translate(const glm::vec2& moveVec) = 0;
     virtual void Rotate(float angle) = 0;
     virtual void Scale(const glm::vec2& sclVec) = 0;

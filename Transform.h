@@ -8,7 +8,7 @@
 class Transform : public virtual Component {
 public:
     Transform(Shader& shader, glm::vec2 pos, float rot, glm::vec2 scl);
-
+ 
     void update()  override;
     void cleanup() const override;
 

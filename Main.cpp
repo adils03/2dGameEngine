@@ -1,21 +1,16 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "Shader.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
-#include "ElementBuffer.h"
-#include "Texture.h"                                                                                          
-#include "Light.h"
-#include "Camera.h"
+#include "ElementBuffer.h"                                                                                       
 #include <glm/gtc/type_ptr.hpp>
 #include <STB/stb_image.h>
 #include "GameObject.h"
-#include "Transform.h"
 #include "Collision.h"
-#include "Collider.h"
-#include "CircleCollider.h"
-#include "BoxCollider.h"
+#include "Colliders.h"
+#include "Components.h"
+
 
 const int FIXED_WIDTH = 1280;
 const int FIXED_HEIGHT = 768;
@@ -170,8 +165,8 @@ int main() {
 	GameObject gameobject(*shader, *transform);
 	GameObject gameobject2(*shader2, transform2);
 
-	BoxCollider collider1(*transform, transform->position, 1, transform->scale,100,100);
-	BoxCollider collider2(transform2, transform2.position, 1, transform2.scale, 100,100);
+	BoxCollider collider1(*transform, transform->position, 0, transform2.scale, 100,100);
+	CircleCollider collider2(transform2, transform2.position, 0, transform2.scale, 50);
 
 	camera->setPriority(2);
 	light.setPriority(3);
@@ -210,10 +205,9 @@ int main() {
 
 		glm::vec2 normal = glm::vec2();
 		float depth = 0;
-
-		if (Collisions::IntersectPolygons(collider1.position, collider2.position,collider1.getVertices(),collider2.getVertices(),normal,depth)) {
-			collider1.Translate(-normal * depth);
-			collider2.Translate(normal * depth);
+		if (Collisions::IntersectCirclePolygon(collider2.position,collider2.getRadius(),collider1.position,collider1.getVertices(), normal, depth)) {
+			transform->Translate(-normal * depth);
+			transform2.Translate(normal * depth);
 		}
 		gameobject.update();
 		vao.bind();
