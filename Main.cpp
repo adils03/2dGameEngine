@@ -7,9 +7,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <STB/stb_image.h>
 #include "GameObject.h"
-#include "Collision.h"
+#include "Collisions.h"
 #include "Colliders.h"
 #include "Components.h"
+#include "World.h"
 
 
 const int FIXED_WIDTH = 1280;
@@ -152,8 +153,6 @@ int main() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	float lastFrame = 0.0f;
-	float value = 0.0f;
 
 	transform = new Transform(*shader, glm::vec2(0, 0), 0, glm::vec2(100, 100));
 	Transform transform2(*shader2, glm::vec2(50, 75), 0, glm::vec2(100, 100));
@@ -189,12 +188,23 @@ int main() {
 	gameobject2.addComponent(&light);
 	gameobject2.addComponent(&texture);
 
+	RigidBody bodyA(collider1, glm::vec2(), 1, 1, true);
+	RigidBody bodyB(collider2, glm::vec2(3,3), 1, 1, true);
+
+	World world(10);
+	world.AddBody(bodyA);
+	world.AddBody(bodyB);
+
 	int indiceCount = sizeof(indices) / sizeof(unsigned int);
+
+	float lastFrame = 0.0f;
+	float value = 0.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
 
 		processInput(window, deltaTime);
 
@@ -205,10 +215,11 @@ int main() {
 
 		glm::vec2 normal = glm::vec2();
 		float depth = 0;
-		if (Collisions::IntersectCirclePolygon(collider2.position,collider2.getRadius(),collider1.position,collider1.getVertices(), normal, depth)) {
-			transform->Translate(-normal * depth);
-			transform2.Translate(normal * depth);
-		}
+		//if (Collisions::IntersectCirclePolygon(collider2.position,collider2.getRadius(),collider1.position,collider1.getVertices(), normal, depth)) {
+		//	transform->Translate(-normal * depth);
+		//	transform2.Translate(normal * depth);
+		//}
+		world.Update(10);
 		gameobject.update();
 		vao.bind();
 		glDrawElements(GL_TRIANGLES, indiceCount, GL_UNSIGNED_INT, 0);

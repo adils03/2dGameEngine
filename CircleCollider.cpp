@@ -9,6 +9,7 @@ CircleCollider::CircleCollider(Transform& transform, glm::vec2& pos, float rot, 
     scaleOffset = transform.scale / scale;
 }
 
+
 void CircleCollider::update() {
     position = transform.position - positionOffset;
     rotation = transform.rotation - rotationOffset;
@@ -16,6 +17,16 @@ void CircleCollider::update() {
 
 void CircleCollider::cleanup() const {
     std::cout << "Cleaning up CircleCollider" << std::endl;
+}
+
+float CircleCollider::GetArea() const
+{
+    return glm::pi<float>() * radius *radius;
+}
+
+ColliderType CircleCollider::GetType() const
+{
+    return ColliderType::Circle;
 }
 
 void CircleCollider::Translate(const glm::vec2& moveVec) {

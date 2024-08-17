@@ -1,7 +1,7 @@
 #include "BoxCollider.h"
 
 BoxCollider::BoxCollider(Transform& transform, glm::vec2& pos, float rot, glm::vec2& sclVec, float width, float height)
-	: Collider(transform, pos, rot, sclVec),width(width), height(height)
+	: Collider(transform, pos, rot, sclVec), width(width), height(height)
 {
 	positionOffset = transform.position - position;
 	rotationOffset = transform.rotation - rotation;
@@ -19,6 +19,16 @@ void BoxCollider::update()
 
 void BoxCollider::cleanup() const
 {
+}
+
+float BoxCollider::GetArea() const
+{
+	return width * height;
+}
+
+ColliderType BoxCollider::GetType() const
+{
+	return ColliderType::Box;
 }
 
 void BoxCollider::Translate(const glm::vec2& moveVec)

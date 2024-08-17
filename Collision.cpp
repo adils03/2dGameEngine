@@ -1,4 +1,4 @@
-#include "Collision.h"
+#include "Collisions.h"
 #include <iostream>
 
 
@@ -193,7 +193,7 @@ void Collisions::ProjectVertices(const std::vector<glm::vec2>& vertices, glm::ve
 		}
 	}
 }
-bool Collisions::IntersectCircles(glm::vec2& centerA, glm::vec2& centerB, float radiusA, float radiusB, glm::vec2& normal, float& depth)
+bool Collisions::IntersectCircles(const glm::vec2& centerA, const glm::vec2& centerB, float radiusA, float radiusB, glm::vec2& normal, float& depth)
 {
 	float distance = glm::distance(centerA, centerB);
 	float radii = radiusA + radiusB;

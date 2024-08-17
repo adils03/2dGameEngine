@@ -11,6 +11,8 @@ public:
     // Override virtual methods from Collider
     void update() override;
     void cleanup() const override;
+    float GetArea() const override;
+    ColliderType GetType() const override;
 
     // Override virtual methods from Component
     void Translate(const glm::vec2& moveVec) override;

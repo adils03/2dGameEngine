@@ -5,6 +5,12 @@
 #include <vector>
 #include "Transform.h"
 
+enum class ColliderType {
+    Circle,
+    Box
+};
+
+
 class Collider 
 {
 public:
@@ -20,6 +26,8 @@ public:
     virtual void Translate(const glm::vec2& moveVec) = 0;
     virtual void Rotate(float angle) = 0;
     virtual void Scale(const glm::vec2& sclVec) = 0;
+    virtual float GetArea() const = 0;
+    virtual ColliderType GetType() const = 0;
 };
 
 #endif // COLLIDER_H
