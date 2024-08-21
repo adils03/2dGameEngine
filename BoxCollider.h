@@ -7,7 +7,7 @@
 class BoxCollider : public virtual Collider, public virtual Component
 {
 public:
-	BoxCollider(Transform& transform, glm::vec2& pos, float rot, glm::vec2& sclVec, float width, float height);
+	BoxCollider(Transform& transform);
 
 	// Override virtual methods from Collider
 	void update() override;

@@ -20,6 +20,7 @@ public:
     void setPosition(const glm::vec2& pos);
     const glm::vec2& getPosition() const;
 
+    void zoom(float zoomVal);
 private:
     Shader& shader;
     glm::vec2 position;

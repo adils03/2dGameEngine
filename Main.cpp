@@ -12,7 +12,6 @@
 #include "Components.h"
 #include "World.h"
 
-
 const int FIXED_WIDTH = 1280;
 const int FIXED_HEIGHT = 768;
 Transform* transform;
@@ -21,12 +20,14 @@ Shader* shader2;
 Camera* camera;
 float deltaTime;
 
+//For resize operations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
 float speed = 100;
-
+bool isRKeyPressed = false;
+//Input
 void processInput(GLFWwindow* window, float deltaTime) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
@@ -69,6 +70,20 @@ void processInput(GLFWwindow* window, float deltaTime) {
 		camera->move(glm::vec2(1000, 0) * deltaTime);
 
 	}
+	/////
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+		if (!isRKeyPressed) {
+			// Bu blok sadece "R" tuþuna ilk kez basýldýðýnda çalýþýr.
+			isRKeyPressed = true;
+
+			// Buraya sadece bir kez yapýlacak iþlemleri koyabilirsiniz.
+			camera->zoom(0.5f);
+		}
+	}
+	else {
+		// R tuþu býrakýldýðýnda isRKeyPressed'i false yapýyoruz.
+		isRKeyPressed = false;
+	}
 }
 
 
@@ -104,6 +119,7 @@ int main() {
 		glfwTerminate();
 		return -1;
 	}
+
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -149,23 +165,25 @@ int main() {
 
 	
 
-	// Þeffaflýk
+	// Transparency
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-	transform = new Transform(*shader, glm::vec2(0, 0), 0, glm::vec2(100, 100));
-	Transform transform2(*shader2, glm::vec2(50, 75), 0, glm::vec2(100, 100));
+	transform = new Transform(*shader, glm::vec2(0, 0), 0, glm::vec2(50, 50));
+	Transform transform2(*shader2, glm::vec2(50, 75), 0, glm::vec2(50, 50));
 
-	Light light(*shader, glm::vec2(0, 0), glm::vec3(1, 1, 1), 1000);
+	Light light(*shader, glm::vec2(0, 0), glm::vec3(1, 1, 1), 10);
 	Light light2(*shader2, glm::vec2(0, 0), glm::vec3(1, 1, 1), 1000);
 
 	camera = new Camera(*shader, static_cast<float>(FIXED_WIDTH), static_cast<float>(FIXED_HEIGHT));
 	GameObject gameobject(*shader, *transform);
 	GameObject gameobject2(*shader2, transform2);
 
-	BoxCollider collider1(*transform, transform->position, 0, transform2.scale, 100,100);
-	CircleCollider collider2(transform2, transform2.position, 0, transform2.scale, 50);
+	//BoxCollider collider1(*transform);
+	//BoxCollider collider2(transform2);
+	CircleCollider collider2(transform2);
+	CircleCollider collider1(*transform);
 
 	camera->setPriority(2);
 	light.setPriority(3);
@@ -183,9 +201,9 @@ int main() {
 	gameobject.addComponent(&texture);
 
 	gameobject2.addComponent(camera);
-	gameobject2.addComponent(shader2);
+	gameobject2.addComponent(shader);
 	gameobject2.addComponent(&collider2);
-	gameobject2.addComponent(&light);
+	gameobject2.addComponent(&light2);
 	gameobject2.addComponent(&texture);
 
 	RigidBody bodyA(collider1, glm::vec2(), 1, 1, true);
@@ -198,7 +216,6 @@ int main() {
 	int indiceCount = sizeof(indices) / sizeof(unsigned int);
 
 	float lastFrame = 0.0f;
-	float value = 0.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = static_cast<float>(glfwGetTime());
@@ -211,14 +228,6 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 
-		value += deltaTime;
-
-		glm::vec2 normal = glm::vec2();
-		float depth = 0;
-		//if (Collisions::IntersectCirclePolygon(collider2.position,collider2.getRadius(),collider1.position,collider1.getVertices(), normal, depth)) {
-		//	transform->Translate(-normal * depth);
-		//	transform2.Translate(normal * depth);
-		//}
 		world.Update(10);
 		gameobject.update();
 		vao.bind();
@@ -232,7 +241,6 @@ int main() {
 		glfwPollEvents();
 	}
 
-	//cleanup
 	shader->deleteShader();
 	texture.Delete();
 	glfwTerminate();

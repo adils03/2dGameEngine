@@ -17,7 +17,7 @@ public:
 	void AddBody(RigidBody& body);
 	void RemoveBody(RigidBody& body);
 
-	void Update(float deltatTime);
+	void Update(float deltaTime);
 	bool Collide(RigidBody& bodyA, RigidBody& bodyB, glm::vec2& normal, float& depth);
 
 

@@ -6,6 +6,9 @@
 #include <vector>
 #include <algorithm>
 #include "Transform.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+#include "ElementBuffer.h"      
 
 class GameObject
 {

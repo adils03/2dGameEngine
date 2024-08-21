@@ -1,7 +1,7 @@
 #include "BoxCollider.h"
 
-BoxCollider::BoxCollider(Transform& transform, glm::vec2& pos, float rot, glm::vec2& sclVec, float width, float height)
-	: Collider(transform, pos, rot, sclVec), width(width), height(height)
+BoxCollider::BoxCollider(Transform& transform)
+	: Collider(transform, transform.position, transform.rotation, transform.scale) , width(transform.scale.x) , height(transform.scale.y)
 {
 	positionOffset = transform.position - position;
 	rotationOffset = transform.rotation - rotation;
@@ -88,5 +88,21 @@ void BoxCollider::updateVertices()
 	glm::vec2(position.x + width / 2, position.y + height / 2),
 	glm::vec2(position.x + width / 2, position.y - height / 2)
 	};
+
+	float radians = glm::radians(rotation);
+
+	float cosTheta = cos(radians);
+	float sinTheta = sin(radians);
+
+	for (glm::vec2& vec : boxVertices) {
+		glm::vec2 relativePosition = vec - position;
+
+		glm::vec2 rotatedPosition(
+			relativePosition.x * cosTheta - relativePosition.y * sinTheta,
+			relativePosition.x * sinTheta + relativePosition.y * cosTheta
+		);
+
+		vec = rotatedPosition + position;
+	}
 	vertices = boxVertices;
 }

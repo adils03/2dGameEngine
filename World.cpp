@@ -15,10 +15,10 @@ void World::RemoveBody(RigidBody& body)
 	
 }
 
-void World::Update(float deltatTime)
+void World::Update(float deltaTime)
 {
 	for (size_t i = 0; i < bodies.size();i++) {
-		bodies[i].physicsUpdate(deltatTime);
+		bodies[i].physicsUpdate(deltaTime);
 	}
 	for (size_t i = 0;i < bodies.size() - 1;i++) {
 		RigidBody& bodyA = bodies[i];

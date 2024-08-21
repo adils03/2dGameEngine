@@ -1,8 +1,8 @@
 #include "CircleCollider.h"
 #include <iostream>
 
-CircleCollider::CircleCollider(Transform& transform, glm::vec2& pos, float rot, glm::vec2& sclVec, float radius)
-    : Collider(transform, pos, rot, sclVec), radius(radius)
+CircleCollider::CircleCollider(Transform& transform)
+    : Collider(transform, transform.position, transform.rotation, transform.scale), radius(std::max(transform.scale.x, transform.scale.y)/2-1)
 {
     positionOffset = transform.position - position;
     rotationOffset = transform.rotation - rotation;

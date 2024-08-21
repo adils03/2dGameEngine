@@ -7,6 +7,10 @@ GameObject::GameObject(Shader& shader, Transform& transform)
     shader.setPriority(0);
     addComponent(&transform);
     transform.setPriority(1);
+
+
+
+
 }
 
 GameObject::~GameObject()

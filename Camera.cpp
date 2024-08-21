@@ -37,3 +37,11 @@ void Camera::setPosition(const glm::vec2& pos) {
 const glm::vec2& Camera::getPosition() const {
     return position;
 }
+
+void Camera::zoom(float zoomVal)
+{
+    width /= zoomVal;
+    height /= zoomVal;
+    setPosition(glm::vec2(-width / 2, -height / 2));
+    updateMatrix();
+}

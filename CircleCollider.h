@@ -6,7 +6,7 @@
 class CircleCollider : public virtual Collider , public virtual Component
 {
 public:
-    CircleCollider(Transform& transform, glm::vec2& pos, float rot, glm::vec2& sclVec, float radius);
+    CircleCollider(Transform& transform);
 
     // Override virtual methods from Collider
     void update() override;
